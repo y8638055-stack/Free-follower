@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Wish</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- THEME SETTINGS --- */
+        :root {
+            --primary: #ff9a9e;
+            --secondary: #a18cd1;
+            --text-dark: #2d3436;
+            --glass: rgba(255, 255, 255, 0.3);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            /* Cute Gradient Background */
+            background-image: linear-gradient(120deg, #a18cd1 0%, #fbc2eb 100%);
+            background-attachment: fixed; /* Keeps bg still while scrolling */
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-dark);
+            overflow-x: hidden; /* Prevent side scrolling */
+        }
+
+        /* --- 1. INTRO OVERLAY --- */
+        #intro {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease;
+        }
+        .intro-btn {
+            padding: 15px 40px;
+            background: linear-gradient(to right, #ff9a9e, #fad0c4);
+            border: none; border-radius: 50px;
+            color: white; font-size: 1.2rem; font-weight: bold;
+            box-shadow: 0 10px 20px rgba(255, 154, 158, 0.4);
+            cursor: pointer;
+            animation: pulse 2s infinite;
+        }
+
+        /* --- 2. HERO SECTION (The Card) --- */
+        .hero {
+            height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            perspective: 1000px;
+            opacity: 0; transition: opacity 1s ease;
+        }
+
+        .card-wrapper {
+            width: 85vw; max-width: 350px;
+            aspect-ratio: 9/16;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .card-wrapper.flipped { transform: rotateY(180deg); }
+
+        .face {
+            position: absolute; width: 100%; height: 100%;
+            -webkit-backface-visibility: hidden; backface-visibility: hidden;
+            border-radius: 20px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(161, 140, 209, 0.4);
+            background: white;
+        }
+
+        /* Front: Video */
+        .front { z-index: 2; background: black; }
+        video { width: 100%; height: 100%; object-fit: cover; }
+        .tap-hint {
+            position: absolute; bottom: 20px; width: 100%; text-align: center;
+            color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            animation: bounce 2s infinite;
+        }
+
+        /* Back: Message */
+        .back {
+            transform: rotateY(180deg);
+            background: rgba(255, 255, 255, 0.9);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
+            border: 4px solid white;
+        }
+        .hbd-text { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: #a18cd1; }
+        
+        .scroll-down {
+            position: absolute; bottom: 30px;
+            color: white; font-size: 0.8rem; letter-spacing: 2px;
+            opacity: 0.7; animation: bounce 2s infinite;
+        }
+
+        /* --- 3. STATS SECTION (Niche Ka Part) --- */
+        .stats-section {
+            padding: 4rem 20px;
+            background: rgba(255, 255, 255, 0.2); /* Glass effect */
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.4);
+            margin-top: -20px;
+            border-radius: 30px 30px 0 0;
+        }
+        .section-header {
+            font-family: 'Poppins'; font-size: 1.5rem; font-weight: bold;
+            color: white; margin-bottom: 30px; text-align: center;
+            text-shadow: 0 2px 10px rgba(161, 140, 209, 0.5);
+        }
+
+        .stat-bar { margin-bottom: 25px; }
+        .stat-label { 
+            display: flex; justify-content: space-between; margin-bottom: 5px; 
+            font-weight: 600; color: #fff; font-size: 0.9rem;
+        }
+        .progress-bg { 
+            width: 100%; height: 12px; background: rgba(255,255,255,0.3); 
+            border-radius: 10px; overflow: hidden; 
+        }
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, #ff9a9e, #fad0c4); 
+            width: 0%; border-radius: 10px;
+            transition: width 1.5s ease-out; 
+            box-shadow: 0 0 10px rgba(255, 154, 158, 0.5);
+        }
+
+        /* --- 4. FOOTER --- */
+        .footer {
+            padding: 3rem 20px; text-align: center;
+            color: white;
+        }
+        .big-year { font-size: 3rem; font-weight: bold; opacity: 0.8; }
+
+        /* Animations */
+        @keyframes pulse { 0% {transform: scale(1);} 50% {transform: scale(1.05);} 100% {transform: scale(1);} }
+        @keyframes bounce { 0%, 100% {transform: translateY(0);} 50% {transform: translateY(-5px);} }
+
+    </style>
+</head>
+<body>
+
+    <div id="intro">
+        <button class="intro-btn" onclick="startExperience()">A small gift from jiya  🎁</button>
+    </div>
+
+    <div class="hero" id="hero">
+        <div class="card-wrapper" onclick="this.classList.toggle('flipped')">
+            <div class="face front">
+                <video id="vid" loop muted playsinline>
+                    <source src="VID_20260127171504.mp4" type="video/mp4">
+                </video>
+                <div class="tap-hint">Tap to Flip ➜</div>
+            </div>
+            <div class="face back">
+                <div class="hbd-text">Happy Birthday!</div>
+                <p style="color: #666; font-size: 0.95rem; margin-top: 15px;">
+                    "Wishing you a day as sweet as you are and a year full of happiness!"
+                </p>
+            </div>
+        </div>
+        <div class="scroll-down">Scroll Down ↓</div>
+    </div>
+
+    <section class="stats-section" id="stats">
+        <h2 class="section-header">Vibe Check ✨</h2>
+        
+        <div class="stat-bar">
+            <div class="stat-label"><span>Cuteness</span> <span>100%</span></div>
+            <div class="progress-bg"><div class="progress-fill" style="width: 100%"></div></div>
+        </div>
+
+        <div class="stat-bar">
+            <div class="stat-label"><span>Intelligence</span> <span>99%</span></div>
+            <div class="progress-bg"><div class="progress-fill" style="width: 99%"></div></div>
+        </div>
+
+        <div class="stat-bar">
+            <div class="stat-label"><span>Attitude</span> <span>Perfect</span></div>
+            <div class="progress-bg"><div class="progress-fill" style="width: 85%"></div></div>
+        </div>
+    </section>
+
+    <section class="footer">
+        <div class="big-year">2026</div>
+        <p>Make it your best year yet.</p>
+    </section>
+
+    <audio id="bgmusic" loop>
+        <source src="HAPPY_BIRTHDAY_TO_YOU___PIANO_INSTRUMENTAL___BEST_HAPPY_BITHDAY_MUSIC_2021(256k).mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        function startExperience() {
+            // Hide Intro
+            document.getElementById('intro').style.opacity = '0';
+            setTimeout(() => { document.getElementById('intro').style.display = 'none'; }, 800);
+
+            // Show Content
+            document.getElementById('hero').style.opacity = '1';
+
+            // Play Media
+            var music = document.getElementById('bgmusic');
+            var video = document.getElementById('vid');
+            music.volume = 0.6;
+            music.play();
+            video.play();
+        }
+
+        // Animation for Stats bars
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    const fills = document.querySelectorAll('.progress-fill');
+                    fills[0].style.width = '100%';
+                    fills[1].style.width = '99%';
+                    fills[2].style.width = '85%';
+                }
+            });
+        });
+        observer.observe(document.getElementById('stats'));
+    </script>
+</body>
+</html>
